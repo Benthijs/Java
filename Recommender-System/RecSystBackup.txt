@@ -1,0 +1,301 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+import javax.swing.JOptionPane;
+/**
+ * @author Benjamin Mason
+ * @version 1.0
+ * 
+ * My intention is to create a program that takes a list of movie ID's and their ratings and then
+ * recommends other movies based on your ratings and the ratings in the 100K movielens dataset.
+ */
+public class RecommendationSystem{
+	static ArrayList<Double> precomp = new ArrayList<Double>();
+	static PrintWriter out;
+	static Scanner in1;
+	static ArrayList<Integer> perfect = new ArrayList<Integer>();
+	static ArrayList<String> data;
+	static ArrayList<Integer> movies = new ArrayList<Integer>();
+	static ArrayList<Integer> notgenmovies = new ArrayList<Integer>();
+	static ArrayList<String> genres = new ArrayList<String>();
+	static double minimumRating = 5.0;
+	static double large = 0;
+	static double val = 3.0;
+	static int ab = 0;
+	static boolean bob = false;
+	public static void main(String[]args){
+		//reader();
+		File inputData = new File("input.txt");
+		compute(inputData);
+	}
+	/**
+	 * Prepares the data for computation.
+	 * @param inData The file with the user data
+	 */
+	public static void compute(File inData){
+		try{
+			out = new PrintWriter(new FileOutputStream("results.txt"));
+			Scanner in = new Scanner(inData);
+			int person = 0;
+			data = new ArrayList<String>();
+			ArrayList<Double> prefs1 = new ArrayList<Double>();
+			ArrayList<Double> prefs2 = new ArrayList<Double>();
+			while(in.hasNext()){
+				data.add(in.nextLine());
+			}
+			in1 = new Scanner(new File("out.txt"));
+			// Finds the similarities for each person and then calls the saveComputation method.
+			while(in1.hasNext()){
+				String line = in1.nextLine();
+				String[] dat = line.split(", ");
+				if(person != Integer.parseInt(dat[0])){
+					if(prefs1.size() > 0){saveComputation(prefs1, prefs2);};
+					prefs1.clear();
+					prefs2.clear();
+					person = Integer.parseInt(dat[0]);
+				}
+				for(int i = 0; i < data.size(); i ++){
+					if(dat[1].equals(data.get(i).split(", ")[0])){
+						prefs1.add(Double.parseDouble(dat[2]));
+						prefs2.add(Double.parseDouble(data.get(i).split(", ")[1]));
+					}
+				}
+			}if(prefs1.size() > 0){saveComputation(prefs1, prefs2);}
+			in.close();in1.close();out.close();
+			RecommenderInterface.con.log("Movies in common found, and Pearson correlation score calculated");
+			String[] num = {"st", "nd", "rd", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th"};
+			System.out.println(minimumRating + " #Encyclopedia");
+			RecommenderInterface.con.log((int)((3.0 + 0.1 - val) / 0.2 + 1) + num[(int)((3.0 - val) / 0.2)] + " time calculated. " + ab + " similar people found. " + minimumRating + " is the lowest rating that the person who had similar interests gave.");
+			makeRecommendations();
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+	}
+	/**
+	 * Finds and saves the people with identical ratings.
+	 * @param prefs1 The preferences of the given person.
+	 * @param prefs2 The preferences of the client.
+	 */
+	public static void saveComputation(ArrayList<Double> prefs1, ArrayList<Double> prefs2){
+		double sum1 = 0; double sum2 = 0; double sum1Sq = 0; double sum2Sq = 0; double pSum = 0; int n = prefs1.size(); double dat1; double dat2;
+		for(int i = 0; i < prefs1.size(); i ++){
+			dat1 = prefs1.get(i);
+			dat2 = prefs2.get(i);
+			sum1 += dat1;
+			sum2 += dat2;
+			sum1Sq += Math.pow(dat1, 2);
+			sum2Sq += Math.pow(dat2, 2);
+			pSum += (dat1 * dat2);
+		}
+		double num = pSum - (sum1 * sum2 / n);
+		double den = Math.sqrt((sum1Sq - Math.pow(sum1, 2) / n) * (sum2Sq - Math.pow(sum2, 2) / n));
+		if(den == 0){
+			precomp.add(0.0);
+		}else{
+			double r = num / den;
+			if(r * n > val){ //Change if no results
+				out.println(precomp.size() - 1);
+				ab ++;
+			}
+		}
+	}
+	/**
+	 * Finds the best movies based on genre and ratings.
+	 */
+	public static void makeRecommendations(){
+		try{
+			Scanner in = new Scanner(new File("results.txt"));
+			//Add all liked genres
+			for(int i = 0; i < data.size(); i ++) {
+				String[] dat = data.get(i).split(", ");
+				for(int a = 0; a < dat.length; a ++) {
+					String[] dat1 = getGenre(Integer.parseInt(dat[0])).split("\\|");
+					if(Double.parseDouble(dat[1]) >= 5) {
+						for(int b = 0; b < dat1.length; b ++) {
+							if(!genres.contains(dat1[b]) && dat1[b].length() > 1) {
+								genres.add(dat1[b]);
+							}
+						}
+					}
+				}
+			}
+			System.out.println(genres);
+			ArrayList<Integer> people = new ArrayList<Integer>();
+			while(in.hasNext()){
+				people.add(in.nextInt());
+			}
+			int i = 0;
+			Scanner in1 = new Scanner(new File("out.txt"));
+			String line;
+			String[] possibleGenre = null;
+			while(in1.hasNext() && i < people.size()){
+				line = in1.nextLine();
+				if(i < people.size() - 1) {
+					if(people.get(i + 1) == (Integer.parseInt(line.split(", ")[0]))){
+						i ++;
+					}
+				}
+
+				if(people.get(i) == Integer.parseInt(line.split(", ")[0])) {
+					boolean alreadyWatched = false;
+					String movie[] = line.split(", ");
+					//Finds if you already watched movie
+					for(int a = 0; a < data.size(); a ++){
+						if(movie[1].equals(data.get(a).split(", ")[0])){
+							alreadyWatched = true;
+							a = data.size();
+						}
+					}
+					if(!alreadyWatched && !movies.contains(Integer.parseInt(movie[1])) && Double.parseDouble(line.split(", ")[2]) >= minimumRating){
+						boolean added = false;
+						possibleGenre = getGenre(Integer.parseInt(movie[1])).split("\\|");
+						if(possibleGenre != null) {
+							for(int a = 0; a < genres.size(); a ++) {
+								for(int b = 0; b < possibleGenre.length; b ++) {
+									if(genres.get(a).equals(possibleGenre[b])) {
+										movies.add(Integer.parseInt(movie[1]));
+										a = genres.size();
+										b = possibleGenre.length;
+										added = true;
+									}
+								}
+							}
+						}
+						if(!added && !notgenmovies.contains(Integer.parseInt(movie[1])) && !movies.contains(Integer.parseInt(movie[1]))) {
+							notgenmovies.add(Integer.parseInt(movie[1]));
+						}
+					}
+				}
+			}
+			movies.addAll(notgenmovies);in.close();in1.close();
+			movieRecommendation();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	/**
+	 * Print out a list of all of the recommended movies in a text file.
+	 */
+		public static void movieRecommendation(){
+			try {
+			int temp;
+			for(int a = 0; a < movies.size(); a ++){
+				for(int b = 0; b < movies.size() - 1; b ++){
+					if(movies.get(b) > movies.get(b + 1)){
+						temp = movies.get(b);
+						movies.set(b, movies.get(b + 1));
+						movies.set(b + 1, temp);
+					}
+				}
+			}
+			System.out.println(movies);
+			System.out.println(notgenmovies);
+			BufferedReader movie = new BufferedReader(new FileReader("movies.csv"));
+			PrintWriter out = new PrintWriter(new FileOutputStream("reccomendations.txt"));
+			int a = 0;
+			movie.readLine();
+			String mes;
+			String line;
+			out.print("Genres:");for(int i = 0; i < genres.size(); i ++) {
+				out.print(" " + genres.get(i));
+			}out.println();
+			System.out.println(movies.size());
+			final int maxMovies = 10;
+			while((line = movie.readLine()) != null && a < movies.size() && a < maxMovies){
+				String[] movieinf = line.split(",");
+				if(Integer.parseInt(movieinf[0]) == movies.get(a)){
+					if(movieinf.length > 3) {
+						mes = "Title: " + line.replaceAll("\"", "").replace(movieinf[0], "").replace(movieinf[movieinf.length - 1], "") + ",, Genre: " + movieinf[movieinf.length - 1];
+					}else {
+						mes = "Title: " + movieinf[1] + ",, Genre: " + movieinf[2];
+					}
+					if(notgenmovies.contains(movies.get(a))) {
+						mes += ",, Not based on Genre";
+					}else{
+						mes += ",, Based on Genre";
+					}
+					out.println(mes);
+					a ++;
+					
+				}
+			}
+			if(movies.size() == 0 && val > 0.1){
+				if(minimumRating > 4.0) {
+					minimumRating -= 0.5;
+				}
+				val -= 0.2;
+				int b = (int)(((3.0 - val) + 0.1) / 0.2);
+				val = 3.0;
+				val -= 0.2 * b;
+				System.out.println(val);
+				compute(new File("input.txt"));
+				ab = 0;
+			}else if(movies.size() == 0){
+				out.println("There are no movies that can be recommended. This is because of the Pearson "
+						+ "correlation score. \n"
+						+ "If you rate everything 5 stars for example it doesn't work, \n"
+						+ "because it only knows your interests.");
+				JOptionPane.showMessageDialog(null, "There are no movies that can be recommended. This is because of the Pearson "
+						+ "correlation score. \n"
+						+ "If you rate everything 5 stars for example it doesn't work, \n"
+						+ "because it doesn't know your interests.", "Error", JOptionPane.PLAIN_MESSAGE);
+				System.exit(0);
+			}movie.close();out.close();
+			if(!bob) {
+				DataBase dat = new DataBase();
+				dat.setVisible(true); 
+				bob = true;
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+	}
+	/**
+	 * @param movieID The ID of the movie according to movies.csv
+	 * @return The genres from that movie.
+	 */
+	public static String getGenre(int movieID) {
+		try {
+			BufferedReader movie = new BufferedReader(new FileReader("movies.csv"));
+			String line;
+			String[] move;
+			movie.readLine();
+			while((line = movie.readLine()) != null) {
+				move = line.split(",");
+				if(Integer.parseInt(move[0]) == movieID) {
+					movie.close();
+					if(move.length == 3) {
+						return move[2];
+					}else{
+						return move[3];
+					}
+				}
+			}
+			movie.close();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
+	/**
+	 * Just a simple method that prints out all of the contents of a file.
+	 * I used when I was dealing with text files that were to large to open with a normal text editor.
+	 */
+	public static void reader(){
+		try{
+		Scanner in = new Scanner(new File("out.txt"));
+		while(in.hasNext()){
+			System.out.println(in.nextLine());
+		}
+		in.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+}

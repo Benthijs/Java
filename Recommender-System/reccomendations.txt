@@ -1,0 +1,11 @@
+Genres: Adventure Drama Fantasy
+Title: Star Wars: Episode IV - A New Hope (1977),, Genre: Action|Adventure|Sci-Fi,, Not based on Genre
+Title: Pulp Fiction (1994),, Genre: Comedy|Crime|Drama|Thriller,, Not based on Genre
+Title: ,Lion King, The (1994),,, Genre: Adventure|Animation|Children|Drama|Musical|IMAX,, Based on Genre
+Title: ,Mask, The (1994),,, Genre: Action|Comedy|Crime|Fantasy,, Based on Genre
+Title: True Lies (1994),, Genre: Action|Adventure|Comedy|Romance|Thriller,, Based on Genre
+Title: Beauty and the Beast (1991),, Genre: Animation|Children|Fantasy|Musical|Romance|IMAX,, Based on Genre
+Title: E.T. the Extra-Terrestrial (1982),, Genre: Children|Drama|Sci-Fi,, Based on Genre
+Title: Star Wars: Episode V - The Empire Strikes Back (1980),, Genre: Action|Adventure|Sci-Fi,, Not based on Genre
+Title: Star Wars: Episode VI - Return of the Jedi (1983),, Genre: Action|Adventure|Sci-Fi,, Based on Genre
+Title: Stand by Me (1986),, Genre: Adventure|Drama,, Not based on Genre
