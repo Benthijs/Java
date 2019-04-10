@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
 
-public class StochasticOptimizationFoundation {
+public class SimulatedAnnealing {
 	static String[] people = {"Seymour;BOS","Franny;DAL","Zooey;CAK","Walt;MIA","Buddy;ORD","Les;OMA"};
 	static HashMap<String, String> peopl = new HashMap<String, String>();
 	static ArrayList<String[]> dataset = new ArrayList<String[][]>();
