@@ -5,11 +5,7 @@ import java.util.Scanner;
 import javax.swing.JOptionPane;
 
 public class SimulatedAnnealing {
-	static String[] people = {"Seymour;BOS","Franny;DAL","Zooey;CAK","Walt;MIA","Buddy;ORD","Les;OMA"};
-	static HashMap<String, String> peopl = new HashMap<String, String>();
 	static ArrayList<String[]> dataset = new ArrayList<String[][]>();
-	static ArrayList<String> sol = new ArrayList<String>();
-	static ArrayList<String> newsol = new ArrayList<String>();
 
 
   public static void main(String[]args) {
