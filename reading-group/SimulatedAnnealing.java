@@ -8,16 +8,16 @@ public class SimulatedAnnealing {
 	static ArrayList<String[]> dataset = new ArrayList<String[][]>();
 
 
-  public static void main(String[]args) {
-    int iterations = 100
+public static void main(String[]args) {
+    int iterations = 100;int temperature = 100; double cool = 0.97; int stepSize = 1;
     getDat(JOptionPane.showInputDialog("fileName", "fileName", 0));
-		simulatedAnnealing(iterations, );
+		simulatedAnnealing(iterations, temperature, cool, stepSize);
 	}
 
   /**
   * Parses the dataset into its allocated ArrayList.
   */
-  public static void getDat(String fileName) {
+public static void getDat(String fileName) {
 		try {
 		Scanner in = new Scanner(new File(fileName));
 		while(in.hasNext()) {
@@ -35,7 +35,7 @@ public class SimulatedAnnealing {
   * @param iterations The number of iterations of the annealing process
   * @return The optimum value as according to this stochastic annealing approach
   */
-	public static int simulatedAnnealing(int iterations, int temperature, int cool, int stepSize){
+public static int simulatedAnnealing(int iterations, int temperature, int cool, int stepSize){
     int metaBest = 0;
     int best = 0;
     int cost = 0;
@@ -66,8 +66,7 @@ public class SimulatedAnnealing {
 	}
 
 
-
-	public static int costFunction(int index){
+public static int costFunction(int index){
     CostFunction.costFunction(dataset.get(index));
   }
 
