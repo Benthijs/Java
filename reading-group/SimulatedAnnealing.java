@@ -12,11 +12,11 @@ public class SimulatedAnnealing {
 
 
 public static void main(String[]args) {
-    int iterations = 100;int temperature = 100; double cool = 0.97; int stepSize = 1;
+		// Exemplary main method
+		int iterations = 100;int temperature = 100; double cool = 0.97; int stepSize = 1;
 		JFrame frame = new JFrame("fileName");
 		getDat("schedules.txt");//JOptionPane.showInputDialog(frame, "fileName", 0)
-		//int metaBest = simulatedAnnealing(iterations, temperature, cool, stepSize);
-		int metaBest = iterativeSearch();
+		int metaBest = simulatedAnnealing(iterations, temperature, cool, stepSize);
 		System.out.println("Index of metaBest is: " + metaBest + " Your metaBest set being: ");
 		int[][] d = dataset.get(metaBest);
 		for(int i = 0; i < d[0].length; i ++){
@@ -24,42 +24,22 @@ public static void main(String[]args) {
 		}
 	}
 
-	public static double Costfunction(int index){
-			int inst[][] = dataset.get(index);
-			int l = inst[0].length;
-	    double inUse = 0; double variance = 0; int mean = 0; int cache = 0;
-	    for(int i = 0; i < l; i ++){
-	      cache = dataset.get(index)[0][i];
-	      variance = cache * cache; mean += cache;
-	      inUse += dataset.get(index)[1][i];
-	    }
-	    variance /= l; variance -= Math.pow((mean / l), 2);
-	    return inUse; //variance + 5*Math.abs(variance)*(inUse/5);
-	  }
-
   /**
-  * Parses the dataset into its allocated ArrayList.
+  * Parses the dataset into its allocated ArrayList. Is created to function with
+	* dataPickage.py - certainly not ideal.
   */
 public static void getDat(String fileName) {
-		//PythonInterpreter dataPickaxe = new PythonInterpreter();
-		//dataPickaxe.exec("import dataPickaxe\ndataPickaxe.dataPickaxe()");
-		//dataPickaxe.execfile("dataPickaxe.py");
-		//PyInstance dataPick = dataPickaxe.createClass("dataPickaxe", "int[][]");
-		//dataPickaxe.invoke("run");
 		try {
 		Scanner in = new Scanner(new File(fileName));
 		while(in.hasNext()) {
 			String[] a = in.nextLine().split(":");
 			int[] b = new int[2]; int[][] d = new int[2][5];
 			for(int i = 0; i < a.length; i ++){
-				b[0] = Integer.parseInt(a[i].replace("[", "").replace("]", "").split(",")[0]); b[1] = Integer.parseInt(a[i].replace("[", "").replace("]", "").split(",")[1].replace(" ", ""));
-				//System.out.println(a[i].replace("[", "").replace("]", "").split(",")[0]);
+				b[0] = Integer.parseInt(a[i].replace("[", "").replace("]", "").split(",")[0]);
+				b[1] = Integer.parseInt(a[i].replace("[", "").replace("]", "").split(",")[1].replace(" ", ""));
 				d[0][i] = b[0]; d[1][i] = b[1];
-			}
-			//System.out.println(d);
-			dataset.add(d);
-		}
-		in.close();
+			}dataset.add(d);
+		}in.close();
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -83,13 +63,13 @@ public static int simulatedAnnealing(int iterations, int temperature, double coo
       while(temperature > 0.1){
         // Direction of descention along that dimension
         int direction = stepSize * (int)((Math.round(Math.random() -0.5) * 2));
-        cost = costFunction(i);
+        cost = costFunction(index);
         if(index + direction >= 0 && index + direction < dataset.size()){
-        ncost = costFunction(index + direction);
+        	ncost = costFunction(index + direction);
         }else{
           break;
         }
-        if(ncost <= cost || Math.random() < Math.pow(Math.E, (-ncost - cost)/ temperature)){
+				if(ncost <= cost || Math.random() < Math.pow(Math.E, (-ncost - cost)/ temperature)){
           index += direction;
           best = index;
         }
@@ -102,9 +82,13 @@ public static int simulatedAnnealing(int iterations, int temperature, double coo
 		return metaBest;
 	}
 
-
+/*
+* Implementation of an iterativesearch algorithm
+* @return The index of the optimum solution
+*/
 public static int iterativeSearch(){
 	int best = 0;
+	// Search complete dataset for ideal solution as according to cost function
 	for(int i = 0; i < dataset.size(); i ++){
 		if (costFunction(i) < costFunction(best)){
 			best = i;
@@ -114,8 +98,11 @@ public static int iterativeSearch(){
 	return best;
 }
 
+
+/*
+* @return The return of the external cost function
+*/
 public static double costFunction(int index){
-		//return Costfunction(index);
 		return CostFunction.Costfunction(dataset.get(index));
   }
 

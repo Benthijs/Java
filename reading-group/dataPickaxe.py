@@ -4,13 +4,13 @@ from bs4 import BeautifulSoup
 import itertools
 
 
+# A rough python script for collecting data from the publicly available school timetables
 def dataPickaxe():
     pages = ['6y', '6m', '6p', '7y', '7m', '8y', '8m', '9y', '9m', '10y', '10m', '11', '12']
     imperialCityGradeChineseCitizen = list()
     file = open('inUse.txt', 'w')
-    # file = open('')
     for i in pages:
-        webpage = "https://www.isutrecht.nl/wp-content/uploads/2019/02/Kla1A_gr" + i + ".htm"
+        webpage = "linkhere" + i + ".htm"
         page = requests.get(webpage)
         soup = BeautifulSoup(page.content, 'html.parser')
         # print soup.prettify()
@@ -47,7 +47,6 @@ def dataPickaxe():
 
         f.write(e + '\n')
         schedule.append(e)
-        # f.write(str(i) + '\n')
     day = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']
     for a in range(5):
         file.write(day[a] + ':\n')
@@ -55,9 +54,6 @@ def dataPickaxe():
             file.write(str(i) + '\n')
     file.close()
     p = list(itertools.product(*(i for i in inUse)))
-    # for i in p:
-    #    f.write(str(p) + '\n')
-    # f.close()
     return schedule
 
 
